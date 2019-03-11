@@ -1,0 +1,55 @@
+#!/usr/bin/env coffee
+
+readline = require 'readline'
+
+rl = readline.createInterface
+  input: process.stdin
+  output: process.stdout
+
+jsh = {}
+
+jsh.jsh = ->
+  that = this
+  rl.question 'cfsh> ', (cmd) ->
+    tokens = cmd.split ' '
+
+    if cmd is ''
+      that.jsh()
+      return
+    else if (that[tokens[0]]? and tokens[1]?) is yes
+      try
+        that[tokens[0]] tokens[1]
+        return
+      catch
+        console.log "Invalid arguments: #{tokens[1]}"
+        that.jsh()
+        return
+    else
+      try
+        that[tokens[0]]()
+        return
+      catch
+        console.log "Command not found: #{tokens[0]}"
+        that.jsh()
+        return
+
+jsh.echo = (arg = '') ->
+  console.log arg
+  @jsh()
+  return
+
+jsh.echoeval = (arg = '') ->
+  console.log eval arg
+  @jsh()
+  return
+
+jsh.eval = (arg = '') ->
+  eval arg
+  @jsh()
+  return
+
+jsh.exit = ->
+  rl.close()
+  return
+
+jsh.jsh()
